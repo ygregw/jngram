@@ -1,0 +1,28 @@
+[
+	{
+		"title": "The C Programming Language",
+		"subtitle": "",
+		"publishyear": "1988",
+		"publisher": "Pearson",
+		"author": "Brian Kernighan and Dennis Ritchie",
+		"lccnumber": "QA76-73-C15-K47-1988",
+		"_comment": "QA76.73.C15 K47 1988",
+		"booktags": [
+			"programming",
+			"clanguage"
+		]
+	},
+	{
+		"title": "The UNIX Programming Environment",
+		"subtitle": "",
+		"publishyear": "1984",
+		"publisher": "Prentice-Hall",
+		"author": "Brian Kernighan and Rob Pike",
+		"lccnumber": "QA76-6-K495-1984",
+		"_comment": "QA76.6 .K495 1984",
+		"booktags": [
+			"programming",
+			"unix"
+		]
+	}
+]
