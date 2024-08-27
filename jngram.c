@@ -19,7 +19,8 @@ const char *usage = "Usage: jngram [flags] filename\n"
 	"\n"
 	"Flags:\n"
 	"\t-l num  minimal length of search keywords (default: 3);\n"
-	"\t-r      print raw keyword ngrams (default: formatted css code);\n";
+	"\t-r      print raw keyword ngrams (default: formatted css code);\n"
+	"\t-a      print all ngrams (default: ngrams that include the first letter).\n";
 
 #define MAX_STRING_LEN 200
 #define MAX_KEYWORD_NUM 100 // for one book
@@ -71,6 +72,20 @@ void keyword_gen(const char* str, struct kwdata *keywords, long len){
 	}
 }
 
+char *gram_gen(char *keyword, int pos, int len)
+{
+   char *gram;
+   int c;
+   gram = malloc(len+1);
+   for (c = 0; c < len; c++)
+   {
+      *(gram+c) = *(keyword+pos);      
+      keyword++;  
+   }
+   *(gram+c) = '\0';
+   return gram;
+}
+
 int file_exists(const char *fname)
 {
     FILE *file;
@@ -85,14 +100,15 @@ int file_exists(const char *fname)
 int main(int argc, char *argv[])
 {
 	bool raw = false;
-	long min_keyword_len = 3;
+	bool all = false;
+	long min_gram_len = 3;
 
 	opterr = 0;
 	for (int opt; (opt = getopt(argc, argv, "l:ra")) != -1; ) {
 		char *endptr;
 		switch (opt) {
 			case 'l':
-				min_keyword_len = strtol(optarg, &endptr, 10);
+				min_gram_len = strtol(optarg, &endptr, 10);
 				if (endptr[0] != '\0') {
 					fprintf(stderr, "ngram: invalid flag value for -l\n\n%s", usage);
 					return 1;
@@ -100,6 +116,9 @@ int main(int argc, char *argv[])
 				break;
 			case 'r':
 				raw = true;
+				break;
+			case 'a':
+				all = true;
 				break;
 			case '?':
 				fprintf(stderr, "ngram: invalid flag -%c\n\n%s", optopt, usage);
@@ -137,22 +156,22 @@ int main(int argc, char *argv[])
 
 		title = json_object_object_get(jbook, "title");
 		const char *title_str = json_object_get_string(title);
-		keyword_gen(title_str,&keywords,min_keyword_len);
+		keyword_gen(title_str,&keywords,min_gram_len);
 
 		subtitle = json_object_object_get(jbook, "subtitle");
 		const char *subtitle_str = json_object_get_string(subtitle);
 		if (subtitle_str[0] != '\0')
-			keyword_gen(subtitle_str,&keywords,min_keyword_len);
+			keyword_gen(subtitle_str,&keywords,min_gram_len);
 
 		author = json_object_object_get(jbook, "author");
 		const char *author_str = json_object_get_string(author);
-		keyword_gen(author_str,&keywords,min_keyword_len);
+		keyword_gen(author_str,&keywords,min_gram_len);
 
 		booktags = json_object_object_get(jbook, "booktags");
 		int ntags = json_object_array_length(booktags);
 		for (int i=0; i < ntags; i++) {
 			const char *tag_str = json_object_get_string(json_object_array_get_idx(booktags, i));
-			keyword_gen(tag_str,&keywords,min_keyword_len);
+			keyword_gen(tag_str,&keywords,min_gram_len);
 		}
 
 		const char *cssid = raw ? "" : json_object_get_string(json_object_object_get(jbook, "lccnumber"));
@@ -163,14 +182,25 @@ int main(int argc, char *argv[])
 
 		for (int i = 0; i < keywords.nkeyword; ++i) {
 			char *kw = keywords.vkeyword[i];
+			char *gram;
 			int kw_len = strlen(kw);
-			for (int j = kw_len; j >= min_keyword_len; j--) {
-				if (j == min_keyword_len && i == keywords.nkeyword-1)
-					printf("%s%s%s%s%s\n",css1,kw,css2,cssid,css4);
-				else
-					printf("%s%s%s%s%s\n",css1,kw,css2,cssid,css3);
-				kw[j-1] = '\0';
+			int pos = 0, gram_len = min_gram_len;
+			while (gram_len <= kw_len) {
+				while (pos + gram_len <= kw_len) {
+					gram = gram_gen(kw, pos, gram_len);
+					if (gram_len == kw_len && i == keywords.nkeyword-1)
+						printf("%s%s%s%s%s\n",css1,gram,css2,cssid,css4);
+					else
+						printf("%s%s%s%s%s\n",css1,gram,css2,cssid,css3);
+					free(gram);
+					if (!all)
+						break;
+					pos++;
+				}
+				pos = 0;
+				gram_len++;
 			}
+
 		}
 
 	}
