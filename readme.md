@@ -8,13 +8,13 @@ See a demo [here](https://gregw.xyz/books/).
 
 You need [json-c](https://github.com/json-c/json-c) installed and ready to use:
 
-```
+```sh
 gcc -I/usr/include/json-c/ jngram.c -ljson-c -o jngram
 ```
 
 # Usage
 
-```sh
+```txt
 Usage: jngram [flags] filename
 
 Flags:
