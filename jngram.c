@@ -40,27 +40,15 @@ struct kwdata {
 int keyword_exists (struct kwdata *keywords, char *new_keyword) {
 	for (int i = 0; i < keywords->nkeyword; i++) {
 		if (strcmp(keywords->vkeyword[i], new_keyword) == 0) {
-			return 1; // keyword already exists
+			return 1;
 		}
 	}
-	return 0; // keyword does not exist
+	return 0;
 }
 
 void add_keyword(struct kwdata *keywords, char *new_keyword) {
 	strcpy(keywords->vkeyword[keywords->nkeyword], new_keyword);
 	keywords->nkeyword++;
-	/*if (keywords->nkeyword >= MAX_KEYWORD_NUM) {*/
-	/*	printf("Keyword array is full, try making MAX_KEYWORD_NUM bigger. ");*/
-	/*	return 1;*/
-	/*} else if (strlen(new_keyword) > MAX_KEYWORD_LEN) {*/
-	/*	printf("Keyword is too long, try making MAX_KEYWORD_LEN bigger. ");*/
-	/*	return 2;*/
-	/*}*/
-	/*else {*/
-	/*	strcpy(keywords->vkeyword[keywords->nkeyword], new_keyword);*/
-	/*	keywords->nkeyword++;*/
-	/*	return 0;*/
-	/*}*/
 }
 
 void keyword_init(struct kwdata *keywords) {
