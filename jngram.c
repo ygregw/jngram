@@ -178,7 +178,7 @@ int main(int argc, char *argv[])
 		const char *css1 = raw ? "" : "input[value='";
 		const char *css2 = raw ? "" : "' i] ~ #booksearchresults #";
 		const char *css3 = raw ? "" : ",";
-		const char *css4 = raw ? "" : "{ display: list-item }";
+		const char *css4 = raw ? "" : " { display: list-item }";
 
 		for (int i = 0; i < keywords.nkeyword; ++i) {
 			char *kw = keywords.vkeyword[i];
